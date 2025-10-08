@@ -1,0 +1,61 @@
+<% layout('/layouts/boilerplate') -%>
+
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h2 class="mb-4">Update Listing</h2>
+
+        <form method="POST" action="/listing/<%= listdata._id%>/update?_method=PUT">
+
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" value="<%= listdata.title %>" class="form-control" required>
+             <div class="valid-feedback"> good Title!</div>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" name="description" value="<%= listdata.description %>" class="form-control" required>
+          </div>
+
+          <!-- Image -->
+          <div class="mb-3">
+            <label for="image" class="form-label">Image</label>
+            <input type="text" name="image.url" value="<%= listdata.image.url %>" class="form-control" required>
+          </div>
+
+          <!-- Price and Country (side by side) -->
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="price" class="form-label">Price</label>
+              <input type="number" name="price" value="<%= listdata.price %>" class="form-control" required>
+              <div class="invalid-feedback">Enter valid price</div>
+            </div>
+
+            <div class="mb-3 col-md-6">
+              <label for="country" class="form-label">Country</label>
+              <input type="text" name="country" value="<%= listdata.country %>" class="form-control" required pattern="[A-Za-z\s]+" title="Enter valid country">
+
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" name="location" value="<%= listdata.location %>" class="form-control" required pattern="[A-Za-z\s]+" title="Only letters are allowed">
+
+          </div>
+
+          <!-- Submit Button -->
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Update Listing</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,121 +1,147 @@
-// Required Modules
+// Required modules
 const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const listings = require("./models/listing");
 const methodOverride = require("method-override");
+const engine = require("ejs-mate");
+const wrapasync = require("./utils/wrapasync.js");
+const ExpressError = require("./utils/ExpressError.js");
+const Review= require("./models/review");
+const {reviewschema, schema}=require("./scemaValidation.js");
+const listing = require("./models/listing");
+const review = require("./models/review");
 
-// Middleware to override method (_method in form)
-app.use(methodOverride("_method"));
-
-// Set EJS as the template engine
+// Set EJS-mate as template engine for layouts
+app.engine('ejs', engine);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Middleware to parse form data
+// Middleware for form data, method override, and static files
+app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// MongoDB Connection URL and Port
+// MongoDB connection
 let port = 8080;
 let url = "mongodb://127.0.0.1:27017/wanderlust";
 
-// MongoDB Connection Function
-main().then((res, err) => {
-    console.log("sucessfuly connect..");
+main().then(() => {
+    console.log("sucessfully connected");
 }).catch((err) => {
-    console.log("somthing wrong", err);
+    console.log("something went wrong", err);
 });
 
 async function main() {
     await mongoose.connect(url);
 }
+const validateScema = (req, res, next) => {
+  const { error } = schema.validate(req.body);
+  if (error) {
+    const msg = error.details.map(el => el.message).join(', ');
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
 
-// ========================= Routes =========================
+const validatereview = (req, res, next) => {
+  // debug: print incoming body so you can verify shape
+  console.log('validatereview - req.body:', req.body);
 
-// Route: Show form to add new listing
-app.get("/listing/add", (req, res) => {
-    res.render("listings/showform");
-});
+  const { error } = reviewschema.validate(req.body); // <-- validate req.body (not { listing: req.body })
+  if (error) {
+    const msg = error.details.map(el => el.message).join(', ');
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
 
-// Route: Handle form submission to create new listing
-app.post("/listing/form", async (req, res) => {
-    try {
-        let { title, description, image, price, location, country } = req.body;
-
-        // Create new listing document
-        let newListing = new listings({
-            title,
-            description,
-            image,
-            price,
-            location,
-            country
-        });
-
-        // Save listing to database
-        await newListing.save();
-
-        // Redirect to listing page
-        res.redirect("/listing");
-    } catch (err) {
-        console.error("Error saving listing:", err);
-        res.status(500).send("Something went wrong.");
-    }
-});
-
-// Route: Show form to edit a listing by ID
-app.get("/listing/:id/edit", async (req, res) => {
-    let { id } = req.params;
-    let listdata = await listings.findById(id);
-    res.render("listings/edit", { listdata });
-});
-
-// Route: Update listing data by ID
-app.put("/listing/:id", async (req, res) => {
-    let { id } = req.params;
-
-    try {
-        await listings.findByIdAndUpdate(id, { ...req.body });
-        console.log("Update successful ✅");
-        res.redirect(`/listing/${id}`);
-    } catch (err) {
-        console.error("Error updating listing ❌", err);
-        res.status(500).send("Something went wrong.");
-    }
-});
-
-// Route: Show all listings
-app.get("/listing", async (req, res) => {
+// Route to show all listings
+app.get("/listing", wrapasync(async (req, res) => {
     let listing = await listings.find({});
-    console.log(listing);
-    res.render("listings/list", { listing });
+    res.render("listings/home", { listing });
+}));
+
+// Show form to add new listing
+app.get("/listing/add", (req, res) => {
+    res.render("listings/add");
 });
 
-// Route: Show single listing details by ID
-app.get("/listing/:id", async (req, res) => {
+// Create new listing
+app.post("/listing/form", validateScema, wrapasync(async (req, res) => {
+  
+    
+    let { title, description, image, price, location, country } = req.body;
+    let newListing = new listings({ title, description, image, price, location, country });
+    await newListing.save();
+    res.redirect("/listing");
+}));
+
+// Show form to edit listing
+app.get("/listing/:id/edit", wrapasync(async (req, res) => {
     let { id } = req.params;
     let listdata = await listings.findById(id);
-    res.render("listings/showdata", { listdata });
-});
+    res.render("listings/update", { listdata });
+}));
 
-// Route: Delete listing by ID
-app.post("/listing/:id/delete", async (req, res) => {
-    try {
-        let { id } = req.params;
-        console.log(id);
-        await listings.findByIdAndDelete(id);
-        console.log("succesfuly delete", id);
-        res.redirect("/listing");
-    } catch (err) {
-        res.send("some error occur");
-    }
-});
+// Update listing
+app.put("/listing/:id/update", validateScema, wrapasync(async (req, res) => {
+    let { id } = req.params;
+    await listings.findByIdAndUpdate(id, { ...req.body });
+    res.redirect(`/listing/${id}`);
+}));
 
-// Start the Server
+// Show single listing details
+app.get("/listing/:id", wrapasync(async (req, res) => {
+    let { id } = req.params;
+ const listdata = await listings.findById(id).populate('reviews'); 
+    res.render("listings/showdetails", { listdata });
+}));
+
+// Delete listing
+app.delete("/listing/:id", wrapasync(async (req, res) => {
+    let { id } = req.params;
+    await listings.findByIdAndDelete(id);
+    res.redirect("/listing");
+}));
+
+// Global error handler
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = "Something went wrong" } = err;
+    res.render("listings/error",{statusCode,message,err})
+});
+app.post('/listing/:id/review', validatereview, wrapasync(async (req, res) => {
+    const { id } = req.params;
+    const listing = await listings.findById(id);
+
+    // req.body.review should be present because form names are review[...]
+    const newReview = new Review(req.body.review);
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    console.log("successfully done");
+    res.redirect(`/listing/${id}`);
+}));
+//review delete button
+app.delete("/listing/:id/delete/:reviewid" ,wrapasync(async(req,res)=>{
+    let{id,reviewid}=req.params;
+   await listing.findByIdAndUpdate(id, {
+    $pull: { reviews: reviewid }
+});
+await Review.findOneAndDelete(reviewid);
+res.redirect(`/listing/${id}`);
+console.log("Delete route triggered", id, reviewid);
+
+
+}));
+
+
+// Start the server
 app.listen(port, () => {
     console.log("success");
 });

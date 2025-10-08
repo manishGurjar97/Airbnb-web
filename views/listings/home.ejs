@@ -1,0 +1,25 @@
+<% layout('/layouts/boilerplate') -%>
+    <!-- delete and add buttons also here -->
+
+    <body>
+        <h1>All Listings</h1>
+
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+  <% for (let list of listing) { %>
+    <a href="/listing/<%= list._id  %>" class="card card-link-wrapper">
+      <img src="<%= list.image.url %>" class="card-img-top" alt="Hotel image">
+      <div class="card-img-overlay"></div>
+      <div class="card-body">
+        <p class="card-text">
+          <%= list.title %> <br>
+          <tag>&#8377</tag>
+          <%= list.price %>
+        </p>
+      </div>
+    </a>
+  <% } %>
+</div>
+
+
+
+    </body>

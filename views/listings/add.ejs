@@ -1,0 +1,56 @@
+<% layout('/layouts/boilerplate') -%>
+
+<body>
+  <div class="row">
+    <div class="col-8 offset-2">
+      <h1>Add your place Here </h1>
+
+      <form method="post" action="/listing/form" novalidate class="needs-validation">
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" name="title" class="form-control" required>
+          <div class="valid-feedback"> good Title!</div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label" required>Description</label>
+          <input type="text" name="description" class="form-control"required>
+        </div>
+
+       
+            <div class="mb-3">
+  <label for="image" class="form-label" >upload Image</label>
+  <input  type="file" name="image" class="form-control" id="formFile">
+</div>
+        <!-- Price and Country in one row -->
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="price" class="form-label">Enter Price</label>
+            <input type="number" name="price" class="form-control" required>
+            <div class="invalid-feedback">Enter valid price</div>
+          </div>
+
+          <div class="mb-3 col-md-8">
+            <label for="country" class="form-label">Country</label>
+            <input type="text" name="country" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input type="text" name="location" class="form-control" required>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mb-3">
+          <button class="btn btn-dark">Add</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</body>
