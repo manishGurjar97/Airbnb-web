@@ -32,6 +32,7 @@ router.post("/form", validateScema, wrapasync(async (req, res) => {
     let { title, description, image, price, location, country } = req.body;
     let newListing = new listings({ title, description, image, price, location, country });
     await newListing.save();
+    req.flash("success", "Successfully created a new listing!");
     res.redirect("/listing");
 }));
 
@@ -60,6 +61,7 @@ router.get("/:id", wrapasync(async (req, res) => {
 router.delete("/:id", wrapasync(async (req, res) => {
     let { id } = req.params;
     await listings.findByIdAndDelete(id);
+    req.flash("success", "Successfully deleted a listing!");
     res.redirect("/listing");
 }));
 module.exports=router;
