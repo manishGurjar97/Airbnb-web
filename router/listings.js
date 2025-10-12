@@ -2,6 +2,7 @@ const express=require("express");
 const router=express.Router();
 const wrapasync = require("../utils/wrapasync.js");
 const {reviewschema, schema}=require("../scemaValidation.js");
+const isAuthenticated=require("../AuthenticationMiddleware.js");
 
 const listings = require("../models/listing");
 
@@ -21,12 +22,12 @@ router.get("/", wrapasync(async (req, res) => {
 }));
 
 // Show form to add new listing
-router.get("/add", (req, res) => {
+router.get("/add", isAuthenticated,(req, res) => {
     res.render("listings/add");
 });
 
 // Create new listing
-router.post("/form", validateScema, wrapasync(async (req, res) => {
+router.post("/form", validateScema, isAuthenticated,wrapasync(async (req, res) => {
   
     
     let { title, description, image, price, location, country } = req.body;
@@ -37,14 +38,14 @@ router.post("/form", validateScema, wrapasync(async (req, res) => {
 }));
 
 // Show form to edit listing
-router.get("/:id/edit", wrapasync(async (req, res) => {
+router.get("/:id/edit", isAuthenticated,wrapasync(async (req, res) => {
     let { id } = req.params;
     let listdata = await listings.findById(id);
     res.render("listings/update", { listdata });
 }));
 
 // Update listing
-router.put("/:id/update", validateScema, wrapasync(async (req, res) => {
+router.put("/:id/update", isAuthenticated,validateScema, wrapasync(async (req, res) => {
     let { id } = req.params;
     await listings.findByIdAndUpdate(id, { ...req.body });
     res.redirect(`/listing/${id}`);
@@ -58,7 +59,7 @@ router.get("/:id", wrapasync(async (req, res) => {
 }));
 
 // Delete listing
-router.delete("/:id", wrapasync(async (req, res) => {
+router.delete("/:id", isAuthenticated,wrapasync(async (req, res) => {
     let { id } = req.params;
     await listings.findByIdAndDelete(id);
     req.flash("success", "Successfully deleted a listing!");

@@ -11,6 +11,7 @@ const User=require("./models/user.js");
 const passport=require("passport");
 const  LocalStrategy=require("passport-local");
 
+
 // Routers
 const Listings = require("./router/listings.js");
 const Reviews = require("./router/reviews.js");
@@ -40,6 +41,9 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
+
+
+
 
 // use static serialize and deserialize of model for passport session support
 passport.serializeUser(User.serializeUser());
