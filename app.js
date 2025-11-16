@@ -53,6 +53,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currentUser=req.user;
   next();
 });
 
@@ -78,14 +79,7 @@ app.use((err, req, res, next) => {
   res.render("listings/error", { statusCode, message, err });
 });
 
-// app.get("/demoUser",async(req,res)=>{
-//   let fakeuser=new User({
-//     email:"student@1223",
-//     username:"manish"
-//   })
-//   let user=await User.register(fakeuser,"123");
-//   res.send(user);
-// })
+
 
 // Start the server
 app.listen(port, () => {

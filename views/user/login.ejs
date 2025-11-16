@@ -1,38 +1,45 @@
 <% layout('/layouts/boilerplate') -%>
-<div class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
 
-      <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-body p-4">
 
-          <h3 class="text-center mb-4 text-primary">Login in Your Account</h3>
+            <h3 class="text-center mb-4 text-primary">Login in Your Account</h3>
 
-          <form action="/login" method="post" novalidate>
+            <form action="/login" method="post" novalidate>
 
-            <!-- Username -->
-            <div class="mb-3">
-              <label for="username" class="form-label fw-semibold">Username</label>
-              <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
-              
-            </div>
+              <!-- Username -->
+              <div class="mb-3">
+                <label for="username" class="form-label fw-semibold">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username"
+                  required>
 
-            <!-- Email -->
-            <!-- <div class="mb-3">
+              </div>
+
+              <!-- Email -->
+              <!-- <div class="mb-3">
               <label for="email" class="form-label fw-semibold">Email address</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
             </div> -->
 
-            <!-- Password -->
-            <div class="mb-4">
-              <label for="password" class="form-label fw-semibold">Password</label>
-              <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-              
-            </div>
+              <!-- Password -->
+              <div class="mb-4">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                  placeholder="Enter your password" required>
 
-            <!-- Submit Button -->
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg rounded-pill">login</button>
-            </div>
+              </div>
 
-          </form>
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill">login</button>
+              </div>
+              <div class="d-grid text-center mt-2">
+                <a class="nav-link" href="/signup">
+                  Don't have an account?
+                  <span class="signup-link">Signup here!</span>
+                </a>
+              </div>
+            </form>

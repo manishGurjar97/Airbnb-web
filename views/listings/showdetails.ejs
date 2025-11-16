@@ -5,102 +5,118 @@
             <div class="row justify-content-center">
                 <div class="col-md-6">
 
+
                     <div class="card shadow-sm border-0 rounded-4">
                         <img src="<%= listdata.image.url %>" class="card-img-top rounded-top" alt="Listing Image">
-
                         <div class="card-body">
-                            <h5 class="card-title fw-bold">
-                                <%= listdata.title %>
+                            <h5 class="card-title fw-semibold text-primary">
+                                👤 Owned by <span class="text-dark">
+                                    <%= listdata.owner.username %>
+                                </span>
                             </h5>
 
-                            <p class="card-text text-muted mb-2">
-                                <%= listdata.description %>
-                            </p>
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">
+                                    <%= listdata.title %>
+                                </h5>
 
-                            <p class="mb-1">
-                                <strong>Price:</strong>
-                                ₹<%= listdata.price.toLocaleString("en-IN") %>
-                            </p>
+                                <p class="card-text text-muted mb-2">
+                                    <%= listdata.description %>
+                                </p>
 
-                            <p class="mb-1">
-                                <strong>Location:</strong>
-                                <%= listdata.location %>
-                            </p>
+                                <p class="mb-1">
+                                    <strong>Price:</strong>
+                                    ₹<%= listdata.price.toLocaleString("en-IN") %>
+                                </p>
 
-                            <p class="mb-3">
-                                <strong>Country:</strong>
-                                <%= listdata.country %>
-                            </p>
+                                <p class="mb-1">
+                                    <strong>Location:</strong>
+                                    <%= listdata.location %>
+                                </p>
 
-                            <div class="button row">
-                                <div>
-                                    <a href="/listing/<%= listdata._id %>/edit" class="btn btn-primary w-100">
-                                        Edit Listing
-                                    </a>
+                                <p class="mb-3">
+                                    <strong>Country:</strong>
+                                    <%= listdata.country %>
+                                </p>
+
+                             <% if(currentUser && currentUser._id.equals(listdata.owner._id)){ %>
+                                <div class="button row">
+                                    <div>
+                                        <a href="/listing/<%= listdata._id %>/edit" class="btn btn-primary w-100">
+                                            Edit Listing
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="/listing/<%=listdata._id%>?_method=DELETE" method="POST"
+                                            onsubmit="return confirm('Are you sure you want to delete this listing?')">
+                                            <button type="submit" class="btn btn-danger w-100">Delete Listing</button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div>
-                                    <form action="/listing/<%=listdata._id%>?_method=DELETE" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this listing?')">
-                                        <button type="submit" class="btn btn-danger w-100">Delete Listing</button>
+                                <% } %>
+
+                                <div class="mb-3">
+                                    <%if(currentUser){%>
+                                    <h4>Drop your great review here!</h4>
+                                    <form action="/listing/<%=listdata._id%>/review" method="post">
+                                        <label for="rating" class="form-label">Rating:</label>
+                                        <input type="range" id="rating" name="review[rating]" min="1" max="5" required>
+
+                                        <label for="comments" class="form-label">Your Comments:</label>
+                                        <textarea id="comments" name="review[comments]" rows="5" cols="40"
+                                            placeholder="Write your feedback here..." class="form-control"
+                                            required></textarea>
+
+                                        <br>
+                                        <button type="submit">Submit</button>
                                     </form>
+                                    <%}else {%>
+                                        <div><b>please login first for add reviews</b></div>
+                                        <%}%>
                                 </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <h4>Drop your great review here!</h4>
-                                <form action="/listing/<%=listdata._id%>/review" method="post">
-                                    <label for="rating" class="form-label">Rating:</label>
-                                    <input type="range" id="rating" name="review[rating]" min="1" max="5" required>
+                                <hr>
 
-                                    <label for="comments" class="form-label">Your Comments:</label>
-                                    <textarea id="comments" name="review[comments]" rows="5" cols="40"
-                                        placeholder="Write your feedback here..." class="form-control"
-                                        required></textarea>
+                                <div class="mb-3">
+                                    <% if(listdata.reviews.length===0) { %>
+                                        <p class="text-muted">No reviews yet.</p>
+                                        <% } %>
 
-                                    <br>
-                                    <button type="submit">Submit</button>
-                                </form>
-                            </div>
+                                            <% listdata.reviews.forEach(review=> { %>
+                                                <div class="card mb-2">
+                                                    <div class="card-body">
+                                                        <h6 class="card-subtitle mb-2 text-muted">@<%= review.author.username%> </h6>
+                                                        <p class="card-text">
+                                                            <strong>Rating:</strong>
+                                                            <%= review.rating %> ⭐
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <strong>Comments:</strong>
+                                                            <%= review.comments %>
+                                                        </p>
+                                                        <% if(currentUser && review.author.equals(currentUser._id)){ %>
 
-                            <hr>
+                                                        <form method="POST"
+                                                            action="/listing/<%=listdata._id %>/review/<%=review._id%>?_method=DELETE">
+                                                            <button type="submit" class="btn btn-danger w-100">Delete
+                                                                Review</button>
+                                                       </form> 
+                                                       <%}%>
 
-                            <div class="mb-3">
-                                <% if(listdata.reviews.length===0) { %>
-                                    <p class="text-muted">No reviews yet.</p>
-                                    <% } %>
+                                                    </div>
 
-                                        <% listdata.reviews.forEach(review=> { %>
-                                            <div class="card mb-2">
-                                                <div class="card-body">
-                                                    <h6 class="card-subtitle mb-2 text-muted">User: Guest</h6>
-                                                    <p class="card-text">
-                                                        <strong>Rating:</strong>
-                                                        <%= review.rating %> ⭐
-                                                    </p>
-                                                    <p class="card-text">
-                                                        <strong>Comments:</strong>
-                                                        <%= review.comments %>
-                                                    </p>
-
-                                                    <form method="POST"
-                                                        action="/listing/<%=listdata._id %>/delete/<%=review._id%>?_method=DELETE">
-                                                        <button type="submit" class="btn btn-danger w-100">Delete
-                                                            Review</button>
-                                                    </form>
-
+                                                    <div class="card-footer text-muted">
+                                                        Reviewed on: <%= new Date(review.createdAt).toLocaleDateString() %>
+                                                            
+                                                    </div>
                                                 </div>
+                                                <% }) %>
+                                </div>
 
-                                                <div class="card-footer text-muted">
-                                                    Reviewed on: <%= new Date(review.createdAt).toLocaleDateString() %>
-                                                </div>
-                                            </div>
-                                            <% }) %>
                             </div>
-
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
-        </div>
     </body>

@@ -107,3 +107,32 @@ footer a:hover {
     justify-content: space-evenly;
     margin-bottom: 15px !important;
 }
+.signup-link {
+    color: #007bff; /* Initial blue */
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+
+  .signup-link:hover {
+    color: #ff4b2b; /* Bright red/pink on hover */
+    transform: scale(1.05); /* Slight zoom */
+    text-shadow: 0 0 8px rgba(255, 75, 43, 0.5);
+  }
+  .login-link {
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .login-link span {
+    color: #007bff;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .login-link span:hover {
+    color: #ff4b2b;
+    text-shadow: 0 0 8px rgba(255, 75, 43, 0.5);
+  }
