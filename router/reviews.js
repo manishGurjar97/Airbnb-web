@@ -1,11 +1,11 @@
 const express=require("express");
 const router=express.Router({mergeParams:true});
 const wrapasync = require("../utils/wrapasync.js");
-const isAuthenticated=require("../AuthenticationMiddleware.js");
+const {isAuthenticated}=require("../AuthenticationMiddleware.js");
 const listings = require("../models/listing");
 const Review= require("../models/review");
 const {reviewschema, schema}=require("../scemaValidation.js");
-
+const {isReviewOwner}=require("../AuthenticationMiddleware.js");
 
 
 
@@ -40,8 +40,9 @@ router.post('/',isAuthenticated, validatereview, wrapasync(async (req, res) => {
     res.redirect(`/listing/${id}`);
 }));
 // review delete button
-router.delete(" /:reviewid ", wrapasync(async(req,res)=>{
+router.delete("/:reviewid",isReviewOwner,wrapasync(async(req,res)=>{
     let{id,reviewid}=req.params;
+
    await listings.findByIdAndUpdate(id, {
     $pull: { reviews: reviewid }
 });
@@ -51,12 +52,7 @@ console.log("Delete route triggered", id, reviewid);
 
 
 }));
-// router.delete("/:reviewid", wrapasync(async (req, res) => {
-//   const { id, reviewid } = req.params;
-//   await listings.findByIdAndUpdate(id, { $pull: { reviews: reviewid } });
-//   await Review.findByIdAndDelete(reviewid);
-//   res.redirect(`/listing/${id}`);
-// }));
+
 
 
 

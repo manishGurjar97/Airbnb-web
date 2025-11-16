@@ -1,6 +1,8 @@
-const listing = require("./models/listing");
 
-function isAuthorized(req, res, next) {
+const Listing = require("./models/listing");
+const Review= require("./models/review");
+
+module.exports.isAuthenticated=(req, res, next)=>{
   if (req.isAuthenticated()) {  // Passport ka built-in method
    
     return next();  // Authorized hai (user logged in hai)
@@ -12,7 +14,7 @@ function isAuthorized(req, res, next) {
   
 }
 
-module.exports = isAuthorized;
+
 
 module.exports.redirectUrl=(req,res,next)=>{
   if(  req.session.redirectUrl){
@@ -21,18 +23,92 @@ module.exports.redirectUrl=(req,res,next)=>{
   next();
 };
 
-const Listing = require("./models/listing");
+
+
+
+
+
+
+
+
+
+
+
+// module.exports.isOwner = async (req, res, next) => {
+//   try {
+//     const { id, reviewid } = req.params;
+
+//     // 🟢 Find the review
+//     const review = await Review.findById(reviewid);
+
+//     // if (!review) {
+//     //   req.flash("success", "Review not found");
+//     //   return res.redirect(`/listing/${id}`);
+//     // }
+
+  
+
+//     // 🟢 Check if review author matches current user
+//     if (!review.author.equals(req.user._id)) {
+//       req.flash("success", "You are not the author of this review");
+//       return res.redirect(`/listing/${id}`);
+//     }
+
+//     // 🟢 All good — move to next middleware/controller
+//     next();
+//   } catch (err) {
+//     console.error("Error in isReviewAuthor middleware:", err);
+//     req.flash("success", "Something went wrong while verifying review owner");
+//     res.redirect(`/listing/${req.params.id}`);
+//   }
+// };
+
 
 module.exports.isOwner = async (req, res, next) => {
-  const { id } = req.params; // assuming route has /:id
-  const listing = await Listing.findById(id);
-  if (!listing) {
-    req.flash("error", "Listing not found");
-    return res.redirect("/listings");
-  }
-  if (!req.user._id.equals(listing.owner._id)) { // assuming listing.owner stores user._id
-    req.flash("success", "You are not the owner of this listing");
-    return res.redirect(`/listing/${id}`);
-  }
-  next();
+    let { id } = req.params;
+
+    // Listing find karo
+    let listing = await Listing.findById(id);
+
+    // Listing exist nahi karti
+    if (!listing) {
+        req.flash("error", "Listing not found!");
+        return res.redirect("/listing");
+    }
+
+    // Check: logged in user = owner ?
+    if (!listing.owner.equals(req.user._id)) {
+        req.flash("error", "You are not the owner!");
+        return res.redirect(`/listing/${id}`);
+    }
+
+    // Sab thik hai → next middleware
+    next();
+};
+  
+
+
+module.exports.isReviewOwner = async (req, res, next) => {
+    const { id, reviewid } = req.params;
+
+    const review = await Review.findById(reviewid);
+
+    if (!review) {
+        req.flash("error", "Review not found!");
+        return res.redirect(`/listing/${id}`);
+    }
+
+    // 🟢 Agar user exist nahi karta
+    if (!req.user) {
+        req.flash("success", "You are not the owner of this review!");
+        return res.redirect(`/listing/${id}`);
+    }
+
+    // 🟢 Check: kya review k author aur current user match hote hain?
+    if (!review.author.equals(req.user._id)) {
+        req.flash("success", "You are not the owner of this review!");
+        return res.redirect(`/listing/${id}`);
+    }
+
+    next();
 };

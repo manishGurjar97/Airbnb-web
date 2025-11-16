@@ -94,18 +94,20 @@
                                                             <strong>Comments:</strong>
                                                             <%= review.comments %>
                                                         </p>
-                                                       
+                                                        <% if(currentUser && review.author.equals(currentUser._id)){ %>
+
                                                         <form method="POST"
-                                                            action="/listing/<%=listdata._id %>/delete/<%=review._id%>?_method=DELETE">
+                                                            action="/listing/<%=listdata._id %>/review/<%=review._id%>?_method=DELETE">
                                                             <button type="submit" class="btn btn-danger w-100">Delete
                                                                 Review</button>
-                                                        </form>
+                                                       </form> 
+                                                       <%}%>
 
                                                     </div>
 
                                                     <div class="card-footer text-muted">
-                                                        Reviewed on: <%= new Date(review.createdAt).toLocaleDateString()
-                                                            %>
+                                                        Reviewed on: <%= new Date(review.createdAt).toLocaleDateString() %>
+                                                            
                                                     </div>
                                                 </div>
                                                 <% }) %>

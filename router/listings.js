@@ -2,7 +2,7 @@ const express=require("express");
 const router=express.Router();
 const wrapasync = require("../utils/wrapasync.js");
 const {reviewschema, schema}=require("../scemaValidation.js");
-const isAuthenticated=require("../AuthenticationMiddleware.js");
+const {isAuthenticated}=require("../AuthenticationMiddleware.js");
 const ExpressError = require("../utils/ExpressErrors.js");
 const {isOwner}=require("../AuthenticationMiddleware.js");
 
@@ -79,9 +79,7 @@ router.put("/:id/update", isAuthenticated,isOwner,validateScema, wrapasync(async
 // Show single listing details
 router.get("/:id", wrapasync(async (req, res) => {
     let { id } = req.params;
-//  const listdata = await listings.findById(id).populate('reviews').populate('owner')
-//  .populate({path:review}
-//   .populate({path:outhor})); 
+
 const listdata = await listings.findById(id)
   .populate({
     path: 'reviews',
