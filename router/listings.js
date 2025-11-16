@@ -1,12 +1,16 @@
 const express=require("express");
 const router=express.Router();
 const wrapasync = require("../utils/wrapasync.js");
-// const {reviewschema, schema}=require("../scemaValidation.js");
+const multer  = require('multer')
+
+const { storage } = require("../config/cloudinary");
+const upload = multer({storage});
+
 
 
 const {isOwner,isAuthenticated,validateScema}=require("../AuthenticationMiddleware.js");
 const listingcontroller=require("../controllers/listings.js")
-// const listings = require("../models/listing");
+
 
 
 
@@ -19,11 +23,14 @@ router.get("/add", isAuthenticated,(req, res) => {
 });
 
 // Create new listing
-router.post(
-  "/form",
-  validateScema,
-  isAuthenticated,wrapasync(listingcontroller.newlisting) 
-)
+// router.post(
+//   "/form",
+//   validateScema,
+//   isAuthenticated,upload.single("image"),wrapasync(listingcontroller.newlisting) 
+// )
+router.post("/form",upload.single("image"),(req,res)=>{
+  res.send(req.file);
+});
 
 
 // Show form to edit listing

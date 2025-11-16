@@ -7,7 +7,7 @@
     <div class="col-8 offset-2">
       <h1>Add your place Here </h1>
 
-      <form method="post" action="/listing/form" novalidate class="needs-validation">
+      <form method="post" action="/listing/form" novalidate class="needs-validation" enctype="multipart/form-data">
 
         <!-- Title -->
         <div class="mb-3">
@@ -27,9 +27,9 @@
 
 
               <!-- image -->
-  <!-- <label for="image" class="form-label" >upload Image</label>
-  <input  type="file" name="image" class="form-control" id="formFile">
-</div> -->
+  <label for="image" class="form-label" >upload Image</label>
+  <input  type="file"  name="image" class="form-control" id="formFile">
+</div>
 
 
         <!-- Price and Country in one row -->
