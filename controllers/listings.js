@@ -1,4 +1,6 @@
 const listings = require("../models/listing");
+// const wrapasync = require("../utils/wrapasync.js");
+// const ExpressError = require("../utils/ExpressErrors.js");
 
 // 🏠 Show all listings
 module.exports.index = async (req, res) => {
