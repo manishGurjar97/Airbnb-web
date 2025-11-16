@@ -3,7 +3,7 @@ const router=express.Router();
 const wrapasync = require("../utils/wrapasync.js");
 // const {reviewschema, schema}=require("../scemaValidation.js");
 
-// const ExpressError = require("../utils/ExpressErrors.js");
+const ExpressError = require("../utils/ExpressErrors.js");
 const {isOwner,isAuthenticated,validateScema}=require("../AuthenticationMiddleware.js");
 const listingcontroller=require("../controllers/listings.js")
 // const listings = require("../models/listing");
@@ -11,7 +11,7 @@ const listingcontroller=require("../controllers/listings.js")
 
 
 
-router.get("/",listingcontroller.index);
+router.get("/",wrapasync(listingcontroller.index));
 
 // Show form to add new listing
 router.get("/add", isAuthenticated,(req, res) => {
@@ -22,19 +22,19 @@ router.get("/add", isAuthenticated,(req, res) => {
 router.post(
   "/form",
   validateScema,
-  isAuthenticated,listingcontroller.newlisting 
+  isAuthenticated,wrapasync(listingcontroller.newlisting) 
 )
 
 
 // Show form to edit listing
-router.get("/:id/edit", isAuthenticated,isOwner,listingcontroller.editListing)
+router.get("/:id/edit", isAuthenticated,isOwner,wrapasync(listingcontroller.editListing));
 
 // Update listing
-router.put("/:id/update", isAuthenticated,isOwner,validateScema,listingcontroller.updateListing );
+router.put("/:id/update", isAuthenticated,isOwner,validateScema,wrapasync(listingcontroller.updateListing) );
 
 // Show single listing details
-router.get("/:id",listingcontroller.showListing );
+router.get("/:id",wrapasync(listingcontroller.showListing) );
 
 // Delete listing
-router.delete("/:id", isAuthenticated,isOwner,listingcontroller.deleteListing);
+router.delete("/:id", isAuthenticated,isOwner,wrapasync(listingcontroller.deleteListing));
 module.exports=router;
