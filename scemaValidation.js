@@ -17,7 +17,7 @@ const schema = Joi.object({
 const reviewschema = Joi.object({
   review: Joi.object({
     comments: Joi.string().required(),
-    rating: Joi.number().integer().min(1).max(5).required()
+    rating: Joi.number().integer().min(1).max(5)
   }).required()
 });
 
