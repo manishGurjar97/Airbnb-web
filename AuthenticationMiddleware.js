@@ -4,6 +4,7 @@ const Review= require("./models/review");
 const {reviewschema, schema}=require("./scemaValidation.js");
 const ExpressError = require("./utils/ExpressErrors.js");
 
+
 module.exports.validatereview = (req, res, next) => {
   // debug: print incoming body so you can verify shape
  
@@ -47,20 +48,6 @@ module.exports.redirectUrl=(req,res,next)=>{
   }
   next();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports.isOwner = async (req, res, next) => {
     let { id } = req.params;
@@ -111,5 +98,26 @@ module.exports.isReviewOwner = async (req, res, next) => {
     next();
 };
 
+
+
+
+// async function getCoordinates(address) {
+//     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+
+//     const res = await axios.get(url, {
+//         headers: {
+//             "User-Agent": "ManishApp/1.0"
+//         }
+//     });
+
+//     if (res.data.length === 0) return null;
+
+//     return {
+//         lat: res.data[0].lat,
+//         lng: res.data[0].lon
+//     };
+// }
+
+// module.exports = getCoordinates;
 
 
