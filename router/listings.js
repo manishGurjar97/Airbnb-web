@@ -23,14 +23,12 @@ router.get("/add", isAuthenticated,(req, res) => {
 });
 
 // Create new listing
-// router.post(
-//   "/form",
-//   validateScema,
-//   isAuthenticated,upload.single("image"),wrapasync(listingcontroller.newlisting) 
-// )
-router.post("/form",upload.single("image"),(req,res)=>{
-  res.send(req.file);
-});
+router.post(
+  "/form",
+  
+  isAuthenticated,upload.single("image"),wrapasync(listingcontroller.newlisting) 
+)
+
 
 
 // Show form to edit listing
