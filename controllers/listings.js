@@ -1,33 +1,43 @@
 const listings = require("../models/listing");
 const axios = require("axios");
 
-// ➕ Create new listing
-module.exports.newlisting = async (req, res) => {
+// 🌍 Geocoding Service (Reuse Nishchit Kiya)
+async function getCoordinates(location) {
   try {
-
-    // 📸 Image upload data  
-    let url = req.file.path;
-    let filename = req.file.filename;
-
-    // 📥 User form se data
-    const { title, description, price, location, country } = req.body;
-
-    // 🌍 Convert location → Coordinates (Geocoding)
     const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`;
-
     const geoRes = await axios.get(geoUrl, {
       headers: { "User-Agent": "ManishApp/1.0" }
     });
 
-    let coordinates = null;
     if (geoRes.data.length > 0) {
-      coordinates = {
+      return {
         lat: geoRes.data[0].lat,
         lng: geoRes.data[0].lon
       };
     }
+  } catch (err) {
+    console.log("🌍 Geocoding Failed:", err);
+  }
 
-    // 🆕 New listing create
+  return null;
+}
+
+// 🏠 Show all listings
+module.exports.index = async (req, res) => {
+  const listing = await listings.find({});
+  res.render("listings/home", { listing });
+};
+
+// ➕ Create new listing
+module.exports.newlisting = async (req, res) => {
+  try {
+    const { title, description, price, location, country } = req.body;
+
+    let url = req.file?.path || "/default.jpg";
+    let filename = req.file?.filename || "default.jpg";
+
+    const coordinates = await getCoordinates(location);
+
     const newListing = new listings({
       title,
       description,
@@ -35,17 +45,90 @@ module.exports.newlisting = async (req, res) => {
       location,
       country,
       owner: req.user._id,
-      geometry: coordinates,   // <-- coordinates save ho rahe hain
+      geometry: coordinates,
       image: { url, filename }
     });
 
     await newListing.save();
-
-    req.flash("success", "Successfully created a listing!");
+    req.flash("success", "Listing created successfully!");
     res.redirect("/listing");
 
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Something went wrong!");
+    console.error("❌ Create Listing Error:", err.message);
+    req.flash("error", "Failed to create listing!");
+    res.redirect("/listing");
   }
+};
+
+// ✏ Edit listing page
+module.exports.editListing = async (req, res) => {
+  const { id } = req.params;
+  const listdata = await listings.findById(id);
+  res.render("listings/update", { listdata });
+};
+
+// 🛠 Update listing
+module.exports.updateListing = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, price, location, country } = req.body;
+
+    const coordinates = await getCoordinates(location);
+
+    let updatedImage = {};
+
+    if (req.body.image) {
+      updatedImage = {
+        url: req.body.image.url,
+        filename: req.body.image.filename
+      };
+    }
+
+    await listings.findByIdAndUpdate(id, {
+      title,
+      description,
+      price,
+      location,
+      country,
+      owner: req.user._id,
+      geometry: coordinates,
+      ...(updatedImage.url && { image: updatedImage })
+    });
+
+    req.flash("success", "Listing updated successfully!");
+    res.redirect(`/listing/${id}`);
+
+  } catch (err) {
+    console.error("❌ Update Listing Error:", err.message);
+    req.flash("error", "Failed to update listing");
+    res.redirect("/listing");
+  }
+};
+
+// 👁 Full Detail Page
+module.exports.showListing = async (req, res) => {
+  const { id } = req.params;
+  const listdata = await listings
+    .findById(id)
+    .populate("owner")
+    .populate({
+      path: "reviews",
+      populate: {
+        path: "author"
+      }
+    });
+
+  res.render("listings/showdetails", { listdata });
+};
+
+// 🗑 Delete listing
+module.exports.deleteListing = async (req, res) => {
+  await listings.findByIdAndDelete(req.params.id);
+  req.flash("success", "Listing deleted successfully!");
+  res.redirect("/listing");
+};
+
+// ➕ Add form render
+module.exports.listingAddForm = (req, res) => {
+  res.render("listings/add");
 };

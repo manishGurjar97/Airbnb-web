@@ -142,28 +142,34 @@
                                                         <div class="mb-4">
                                                             <h3>where you will be </h3>
                                                             <div id="map">
-                                                                </div>
 
-                                                            
+                                                            </div>
+
+
 
                                                             <script>
-                                                                // Backend se aaya data (EJS inject)
-                                                                const lat = <%= listdata.geometry.lat %>;
-                                                                const lng = <%= listdata.geometry.lng %>;
+                                                                // EJS se aaya string value ko number me convert kar rahe hain
+                                                                const lat = parseFloat("<%= listdata.geometry.lat %>");
+                                                                const lng = parseFloat("<%= listdata.geometry.lng %>");
 
-                                                                // Map initialize
+                                                                console.log("Coordinates:", lat, lng); // debugging ke liye (optional)
+
+                                                                // Map initialize at correct listing location
                                                                 var map = L.map('map').setView([lat, lng], 12);
 
-                                                                // OSM Tile Layer
+                                                                // OpenStreetMap tile layer
                                                                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                                                     maxZoom: 19
                                                                 }).addTo(map);
 
                                                                 // Marker add
                                                                 L.marker([lat, lng]).addTo(map)
-                                                                    .bindPopup(`<b><%= listdata.title %></b><br><%= listdata.location %>`)
+                                                                    .bindPopup("<b><%= listdata.title %></b><br><%= listdata.location %>")
                                                                     .openPopup();
                                                             </script>
+
+
+
 
 
 
