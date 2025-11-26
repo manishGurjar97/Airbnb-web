@@ -70,7 +70,7 @@ module.exports.editListing = async (req, res) => {
 // 🛠 Update listing
 module.exports.updateListing = async (req, res) => {
   try {
-    const { id } = req.params;
+let { id } = req.params;
     const { title, description, price, location, country } = req.body;
 
     const coordinates = await getCoordinates(location);
@@ -99,6 +99,7 @@ module.exports.updateListing = async (req, res) => {
     res.redirect(`/listing/${id}`);
 
   } catch (err) {
+    let { id } = req.params;
     console.error("❌ Update Listing Error:", err.message);
     req.flash("error", "Failed to update listing");
     res.redirect("/listing");
