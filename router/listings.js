@@ -15,7 +15,8 @@ const listingcontroller=require("../controllers/listings.js")
 
 
 
-router.get("/",wrapasync(listingcontroller.index));
+// router.get("/",wrapasync(listingcontroller.index));
+router.get("/", wrapasync(listingcontroller.trending));
 
 // Show form to add new listing
 router.get("/add", isAuthenticated,(req, res) => {

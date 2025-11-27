@@ -118,6 +118,9 @@ module.exports.showListing = async (req, res) => {
         path: "author"
       }
     });
+    let count = listdata.visits += 1;
+    await listdata.save();
+    console.log(count);
 
   res.render("listings/showdetails", { listdata });
 };
@@ -133,3 +136,21 @@ module.exports.deleteListing = async (req, res) => {
 module.exports.listingAddForm = (req, res) => {
   res.render("listings/add");
 };
+
+module.exports.trending = async (req, res) => {
+
+  let { sort } = req.query;
+  let listing;
+
+  // 🔥 Trending Filter (highest visits first)
+  if (sort === "trending") {
+    listing = await listings.find().sort({ visits: -1 });
+    console.log(listing);
+  } else {
+    // Default: all listings without sorting
+    listing = await listings.find();
+  }
+
+  res.render("listings/home", {listing});
+}
+

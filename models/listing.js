@@ -33,7 +33,12 @@ let ListingSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
         ref: "User"
-    }
+    },
+   visits: {
+    type: Number,
+    default: 0
+}
+
 });
 
 // 🧹 Auto-delete reviews when listing deleted
