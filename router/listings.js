@@ -15,8 +15,10 @@ const listingcontroller=require("../controllers/listings.js")
 
 
 
-// router.get("/",wrapasync(listingcontroller.index));
+
 router.get("/", wrapasync(listingcontroller.trending));
+
+router.get("/",wrapasync(listingcontroller.index));
 
 // Show form to add new listing
 router.get("/add", isAuthenticated,(req, res) => {
@@ -44,3 +46,5 @@ router.get("/:id",wrapasync(listingcontroller.showListing) );
 // Delete listing
 router.delete("/:id", isAuthenticated,isOwner,wrapasync(listingcontroller.deleteListing));
 module.exports=router;
+
+router.post("/search/location",wrapasync(listingcontroller.search));
