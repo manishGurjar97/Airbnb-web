@@ -1,50 +1,71 @@
-const express=require("express");
-const router=express.Router();
+const express = require("express");
+const router = express.Router();
 const wrapasync = require("../utils/wrapasync.js");
-const multer  = require('multer')
+const multer = require("multer");
 
 const { storage } = require("../config/cloudinary");
-const upload = multer({storage});
+const upload = multer({ storage });
+
+const {
+  isOwner,
+  isAuthenticated,
+  validateScema,
+} = require("../AuthenticationMiddleware.js");
+
+const listingcontroller = require("../controllers/listings.js");
 
 
+// -------------------- ROUTES -------------------- //
 
-const {isOwner,isAuthenticated,validateScema}=require("../AuthenticationMiddleware.js");
-const listingcontroller=require("../controllers/listings.js")
+// ⭐ Trending Listings
+router.get("/trending", wrapasync(listingcontroller.trending));
 
+// ⭐ Home - All listings
+router.get("/", wrapasync(listingcontroller.index));
 
+// ⭐ Search (moved UP so it does NOT conflict with :id route)
+router.post("/search/location", wrapasync(listingcontroller.search));
 
-
-
-
-router.get("/", wrapasync(listingcontroller.trending));
-
-router.get("/",wrapasync(listingcontroller.index));
-
-// Show form to add new listing
-router.get("/add", isAuthenticated,(req, res) => {
-    res.render("listings/add");
+// ⭐ Add Listing Form
+router.get("/add", isAuthenticated, (req, res) => {
+  res.render("listings/add");
 });
 
-// Create new listing
+// ⭐ Create New Listing
 router.post(
   "/form",
-  
-  isAuthenticated,upload.single("image"),wrapasync(listingcontroller.newlisting) 
-)
+  isAuthenticated,
+  upload.single("image"),
+  validateScema,         // ADD THIS (important)
+  wrapasync(listingcontroller.newlisting)
+);
 
+// ⭐ Edit Listing Form
+router.get(
+  "/:id/edit",
+  isAuthenticated,
+  isOwner,
+  wrapasync(listingcontroller.editListing)
+);
 
+// ⭐ Update Listing
+router.put(
+  "/:id/update",
+  isAuthenticated,
+  isOwner,
+  validateScema,
+  wrapasync(listingcontroller.updateListing)
+);
 
-// Show form to edit listing
-router.get("/:id/edit", isAuthenticated,isOwner,wrapasync(listingcontroller.editListing));
+// ⭐ Show Single Listing
+router.get("/:id", wrapasync(listingcontroller.showListing));
 
-// Update listing
-router.put("/:id/update", isAuthenticated,isOwner,validateScema,wrapasync(listingcontroller.updateListing) );
+// ⭐ Delete Listing
+router.delete(
+  "/:id",
+  isAuthenticated,
+  isOwner,
+  wrapasync(listingcontroller.deleteListing)
+);
 
-// Show single listing details
-router.get("/:id",wrapasync(listingcontroller.showListing) );
-
-// Delete listing
-router.delete("/:id", isAuthenticated,isOwner,wrapasync(listingcontroller.deleteListing));
-module.exports=router;
-
-router.post("/search/location",wrapasync(listingcontroller.search));
+module.exports = router;
