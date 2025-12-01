@@ -5,28 +5,46 @@ const {reviewschema, schema}=require("./scemaValidation.js");
 const ExpressError = require("./utils/ExpressErrors.js");
 
 
-module.exports.validatereview = (req, res, next) => {
-  // debug: print incoming body so you can verify shape
+// module.exports.validatereview = (req, res, next) => {
+//   // debug: print incoming body so you can verify shape
  
 
-  const { error } = reviewschema.validate(req.body); // <-- validate req.body (not { listing: req.body })
+//   const { error } = reviewschema.validate(req.body); // <-- validate req.body (not { listing: req.body })
+//   if (error) {
+//     const msg = error.details.map(el => el.message).join(', ');
+//     throw new ExpressError(msg, 400);
+//   } else {
+//     next();
+//   }
+// };
+module.exports.validatereview = (req, res, next) => {
+  const { error } = reviewschema.validate(req.body);
   if (error) {
     const msg = error.details.map(el => el.message).join(', ');
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
+    return next(new ExpressError(msg, 400));
   }
+  next();
 };
 
+
+// module.exports.validateScema = (req, res, next) => {
+//   const { error } = schema.validate(req.body);
+//   if (error) {
+//     const msg = error.details.map(el => el.message).join(', ');
+//     throw new ExpressError(msg, 400);
+//   } else {
+//     next();
+//   }
+// };
 module.exports.validateScema = (req, res, next) => {
   const { error } = schema.validate(req.body);
   if (error) {
     const msg = error.details.map(el => el.message).join(', ');
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
+    return next(new ExpressError(msg, 400));
   }
+  next();
 };
+
 
 module.exports.isAuthenticated=(req, res, next)=>{
   if (req.isAuthenticated()) {  // Passport ka built-in method
