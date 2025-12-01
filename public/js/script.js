@@ -17,3 +17,17 @@
     }, false)
   })
 })()
+// 
+    const form = document.getElementById("addForm");
+  const overlay = document.getElementById("overlay");
+
+  form.addEventListener("submit", function (e) {
+    
+   
+    if (!form.checkValidity()) {
+      return; 
+    }
+
+   
+    overlay.style.display = "flex";
+  });

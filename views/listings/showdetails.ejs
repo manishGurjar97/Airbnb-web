@@ -98,82 +98,84 @@
 
                                     <hr>
 
-                                    <!-- ⭐ Review List -->
+                                    <!-- Review List -->
                                     <div class="mt-4">
 
-                                        <% if (listdata.reviews.length===0) { %>
-                                            <p class="text-muted">No reviews yet. Be the first to write one!</p>
-                                            <% } %>
+                                        <% const reviews=listdata.reviews || []; %>
 
-                                                <% listdata.reviews.forEach(review=> { %>
-                                                    <div class="card mb-3 shadow-sm border-0">
-                                                        <div class="card-body">
+                                            <% if (reviews.length===0) { %>
+                                                <p class="text-muted">No reviews yet. Be the first to write one!</p>
+                                                <% } %>
 
-                                                            <h6 class="text-primary">@<%= review.author.username %>
-                                                            </h6>
+                                                    <% reviews.forEach(review=> { %>
+                                                        <div class="card mb-3 shadow-sm border-0">
+                                                            <div class="card-body">
 
-                                                            <!-- ⭐ Stars -->
-                                                            <div class="starability-result mb-2"
-                                                                data-rating="<%= review.rating %>"></div>
+                                                                <h6 class="text-primary">@<%= review.author.username %>
+                                                                </h6>
 
-                                                            <p><strong>Comment:</strong>
-                                                                <%= review.comments %>
-                                                            </p>
+                                                                <!--  Stars -->
+                                                                <div class="starability-result mb-2"
+                                                                    data-rating="<%= review.rating %>"></div>
 
-                                                            <!-- Delete Button - Review Owner Only -->
-                                                            <% if (currentUser && review.author.equals(currentUser._id))
-                                                                { %>
-                                                                <form method="POST"
-                                                                    action="/listing/<%= listdata._id %>/review/<%= review._id %>?_method=DELETE">
-                                                                    <button class="btn btn-danger w-100">Delete
-                                                                        Review</button>
-                                                                </form>
-                                                                <% } %>
+                                                                <p><strong>Comment:</strong>
+                                                                    <%= review.comments %>
+                                                                </p>
 
-                                                                    <!-- Date -->
-                                                                    <p class="text-muted mt-2 small">
-                                                                        Reviewed on: <%= review.createdAt.toDateString()
-                                                                            %>
-                                                                    </p>
+                                                                <!-- Delete Button - Review Owner Only -->
+                                                                <% if (currentUser &&
+                                                                    review.author.equals(currentUser._id)) { %>
+                                                                    <form method="POST"
+                                                                        action="/listing/<%= listdata._id %>/review/<%= review._id %>?_method=DELETE">
+                                                                        <button class="btn btn-danger w-100">Delete
+                                                                            Review</button>
+                                                                    </form>
+                                                                    <% } %>
 
-                                                        </div>
-                                                    </div>
-                                                    <% }) %>
-                                                        <div class="mb-4">
-                                                            <h3>where you will be </h3>
-                                                            <div id="map">
+                                                                        <!-- Date -->
+                                                                        <p class="text-muted mt-2 small">
+                                                                            Reviewed on: <%=
+                                                                                review.createdAt.toDateString() %>
+                                                                        </p>
 
                                                             </div>
-
-
-
-                                                            <script>
-                                                                // EJS se aaya string value ko number me convert kar rahe hain
-                                                                const lat = parseFloat("<%= listdata.geometry.lat %>");
-                                                                const lng = parseFloat("<%= listdata.geometry.lng %>");
-
-                                                                console.log("Coordinates:", lat, lng); // debugging ke liye (optional)
-
-                                                                // Map initialize at correct listing location
-                                                                var map = L.map('map').setView([lat, lng], 12);
-
-                                                                // OpenStreetMap tile layer
-                                                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                                                    maxZoom: 19
-                                                                }).addTo(map);
-
-                                                                // Marker add
-                                                                L.marker([lat, lng]).addTo(map)
-                                                                    .bindPopup("<b><%= listdata.title %></b><br><%= listdata.location %>")
-                                                                    .openPopup();
-                                                            </script>
-
-
-
-
-
-
                                                         </div>
+                                                        <% }) %>
+                                                            <div class="mb-4">
+                                                                <h3>where you will be </h3>
+                                                                <div id="map">
+
+                                                                </div>
+
+
+
+                                                                <script>
+                                                                    // EJS se aaya string value ko number me convert kar rahe hain
+                                                                    const lat = parseFloat("<%= listdata.geometry.lat %>");
+                                                                    const lng = parseFloat("<%= listdata.geometry.lng %>");
+
+                                                                    console.log("Coordinates:", lat, lng); // debugging ke liye (optional)
+
+                                                                    // Map initialize at correct listing location
+                                                                    var map = L.map('map').setView([lat, lng], 12);
+
+                                                                    // OpenStreetMap tile layer
+                                                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                                                        maxZoom: 19
+                                                                    }).addTo(map);
+
+                                                                    // Marker add
+                                                                    L.marker([lat, lng]).addTo(map)
+                                                                        .bindPopup("<b><%= listdata.title %></b><br><%= listdata.location %>")
+                                                                        .openPopup();
+                                                                </script>
+
+
+
+
+
+
+                                                            </div>
 
                                     </div>
                         </div>

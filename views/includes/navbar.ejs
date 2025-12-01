@@ -31,10 +31,17 @@
         <a class="nav-link active" href="/listing"><b>Explor</b></a>
       </div>
 
-      <form action="/listing/search/location"  method="post"  class="navbar-nav ms-auto"  class="d-flex search-btn" role="search">
-        <input class="form-control me-2" name="data" type="search" placeholder="search by city or country" aria-label="Search"/>
-        <button class="btn btn-outline-success btn-s" type="submit">Search</button>
-      </form>
+      <form action="/listing/search" method="get" 
+      class="navbar-nav ms-auto d-flex search-btn" role="search">
+
+    <input class="form-control me-2" 
+           name="data" 
+           type="search" 
+           placeholder="search by city or country" 
+           aria-label="Search"/>
+
+    <button class="btn btn-outline-success btn-s" type="submit">Search</button>
+</form>
 
       <!-- Right Section -->
       <div class="navbar-nav ms-auto">

@@ -17,7 +17,7 @@ let ListingSchema = new Schema({
     location: String,
     country: String,
 
-    // ⭐ ADD THIS — Geocoding result stored here
+    // ADD THIS — Geocoding result stored here
     geometry: {
         lat: String,
         lng: String
@@ -41,7 +41,7 @@ let ListingSchema = new Schema({
 
 });
 
-// 🧹 Auto-delete reviews when listing deleted
+//  Auto-delete reviews when listing deleted
 ListingSchema.post("findOneAndDelete", async (listing) => {
     if (listing) {
         await Review.deleteMany({ _id: { $in: listing.reviews } });
