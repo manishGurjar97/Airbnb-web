@@ -10,7 +10,7 @@ const schema = Joi.object({
   }).optional(),
   price: Joi.number().required(),
   location: Joi.string().required(),
-  country: Joi.string().required()
+  country: Joi.string()
 });
 
 // Expect the body to be { review: { comments, rating } }
