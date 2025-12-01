@@ -7,27 +7,42 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const engine = require("ejs-mate");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const flash = require("express-flash");
 const User=require("./models/user.js");
 const passport=require("passport");
 const  LocalStrategy=require("passport-local");
-
+const url = process.env.MONGO_URL;
 
 
 // Routers
 const Listings = require("./router/listings.js");
 const Reviews = require("./router/reviews.js");
 const users=require("./router/users.js");
-
+const store =MongoStore.create({
+   mongoUrl:url,
+  //  crypto:{
+  //   secret: process.env.SESSION_SECRET
+  //  },
+   touchAfter:24* 3600,
+})
 // Session configuration
 const sessionOptions = {
-  secret: "keyboard cat",
+  store,
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   },
 };
+
+
+
+store.on("error", (err) => {
+  console.log("Error in Mongo Session Store:", err);
+});
+
 
 // Set view engine
 app.engine("ejs", engine);
@@ -61,7 +76,7 @@ app.use((req, res, next) => {
 
 // MongoDB connection
 const port = 8080;
-const url = "mongodb://127.0.0.1:27017/wanderlust";
+
 
 async function main() {
   await mongoose.connect(url);
@@ -76,9 +91,24 @@ app.use("/listing/:id/review", Reviews);
 app.use("/",users);
 
 // Global error handler
+// app.use((err, req, res, next) => {
+//   const { statusCode = 500, message = "Something went wrong" } = err;
+//   res.render("listings/error", { statusCode, message, err });
+// });
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message = "Something went wrong" } = err;
-  res.render("listings/error", { statusCode, message, err });
+
+  if (res.headersSent) {
+      return next(err);  // IMPORTANT FIX
+  }
+
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Something went wrong";
+
+  return res.status(statusCode).render("listings/error", {
+      statusCode,
+      message,
+      err,
+  });
 });
 
 

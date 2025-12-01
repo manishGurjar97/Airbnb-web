@@ -67,7 +67,7 @@ module.exports.isOwner = async (req, res, next) => {
         return res.redirect(`/listing/${id}`);
     }
 
-    // Sab thik hai → next middleware
+  
     next();
 };
   
@@ -83,13 +83,13 @@ module.exports.isReviewOwner = async (req, res, next) => {
         return res.redirect(`/listing/${id}`);
     }
 
-    // 🟢 Agar user exist nahi karta
+    //  Agar user exist nahi karta
     if (!req.user) {
         req.flash("success", "You are not the owner of this review!");
         return res.redirect(`/listing/${id}`);
     }
 
-    // 🟢 Check: kya review k author aur current user match hote hain?
+    //  Check: kya review k author aur current user match hote hain?
     if (!review.author.equals(req.user._id)) {
         req.flash("success", "You are not the owner of this review!");
         return res.redirect(`/listing/${id}`);
@@ -101,23 +101,5 @@ module.exports.isReviewOwner = async (req, res, next) => {
 
 
 
-// async function getCoordinates(address) {
-//     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-
-//     const res = await axios.get(url, {
-//         headers: {
-//             "User-Agent": "ManishApp/1.0"
-//         }
-//     });
-
-//     if (res.data.length === 0) return null;
-
-//     return {
-//         lat: res.data[0].lat,
-//         lng: res.data[0].lon
-//     };
-// }
-
-// module.exports = getCoordinates;
 
 

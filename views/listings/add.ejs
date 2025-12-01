@@ -1,49 +1,45 @@
 <% layout('/layouts/boilerplate') -%>
 
 <body>
-  
-  
+
+  <!--  FULL PAGE LOADER -->
+  <div id="overlay">
+    <div class="loader"></div>
+    <p class="mt-3 fw-bold">Creating your listing...</p>
+  </div>
+
   <div class="row">
     <div class="col-8 offset-2">
-      <h1>Add your place Here </h1>
+      <h1>Add your place Here</h1>
 
-      <form method="post" action="/listing/form" novalidate class="needs-validation" enctype="multipart/form-data">
+      <form method="post" action="/listing/form" novalidate class="needs-validation" enctype="multipart/form-data" id="addForm">
 
         <!-- Title -->
         <div class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input type="text" name="title" class="form-control" required>
-          <div class="valid-feedback"> good Title!</div>
+          <div class="valid-feedback"> Good Title!</div>
         </div>
 
         <!-- Description -->
         <div class="mb-3">
-          <label for="description" class="form-label" required>Description</label>
-          <input type="text" name="description" class="form-control"required>
+          <label for="description" class="form-label">Description</label>
+          <input type="text" name="description" class="form-control" required>
         </div>
 
-       
-            <div class="mb-3">
+        <!-- Image -->
+        <div class="mb-3">
+          <label for="image" class="form-label">Upload Image</label>
+          <input type="file" name="image" class="form-control" id="formFile">
+        </div>
 
-
-              <!-- image -->
-  <label for="image" class="form-label" >upload Image</label>
-  <input  type="file"  name="image" class="form-control" id="formFile">
-</div>
-
-
-        <!-- Price and Country in one row -->
+        <!-- Price -->
         <div class="row">
           <div class="mb-3 col-md-4">
             <label for="price" class="form-label">Enter Price</label>
             <input type="number" name="price" class="form-control" required>
             <div class="invalid-feedback">Enter valid price</div>
           </div>
-
-          <!-- <div class="mb-3 col-md-8">
-            <label for="country" class="form-label">Country</label>
-            <input type="text" name="country" class="form-control" required>
-          </div> -->
         </div>
 
         <!-- Location -->
@@ -60,4 +56,6 @@
       </form>
     </div>
   </div>
-</body>
+
+  <!--  JAVASCRIPT FOR LOADER -->
+  

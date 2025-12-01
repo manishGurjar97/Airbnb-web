@@ -1,46 +1,50 @@
+// LISTING ROUTES
+
 const express = require("express");
 const router = express.Router();
 const wrapasync = require("../utils/wrapasync.js");
 const multer = require("multer");
-
 const { storage } = require("../config/cloudinary");
 const upload = multer({ storage });
 
+// Middleware
 const {
   isOwner,
   isAuthenticated,
   validateScema,
 } = require("../AuthenticationMiddleware.js");
 
+// Controller
 const listingcontroller = require("../controllers/listings.js");
 
 
 // -------------------- ROUTES -------------------- //
 
-// ⭐ Trending Listings
+// Trending Listings
 router.get("/trending", wrapasync(listingcontroller.trending));
 
-// ⭐ Home - All listings
+//  All Listings (Home Page)
 router.get("/", wrapasync(listingcontroller.index));
 
-// ⭐ Search (moved UP so it does NOT conflict with :id route)
+//  Search Route (POST)
 router.post("/search/location", wrapasync(listingcontroller.search));
 
-// ⭐ Add Listing Form
+
+//  Add Listing Form
 router.get("/add", isAuthenticated, (req, res) => {
   res.render("listings/add");
 });
 
-// ⭐ Create New Listing
+//  Create New Listing
 router.post(
   "/form",
   isAuthenticated,
   upload.single("image"),
-  validateScema,         // ADD THIS (important)
+  validateScema,
   wrapasync(listingcontroller.newlisting)
 );
 
-// ⭐ Edit Listing Form
+// Edit Listing Form
 router.get(
   "/:id/edit",
   isAuthenticated,
@@ -48,7 +52,7 @@ router.get(
   wrapasync(listingcontroller.editListing)
 );
 
-// ⭐ Update Listing
+//  Update Listing
 router.put(
   "/:id/update",
   isAuthenticated,
@@ -57,10 +61,10 @@ router.put(
   wrapasync(listingcontroller.updateListing)
 );
 
-// ⭐ Show Single Listing
+//  Show Single Listing
 router.get("/:id", wrapasync(listingcontroller.showListing));
 
-// ⭐ Delete Listing
+//  Delete Listing
 router.delete(
   "/:id",
   isAuthenticated,

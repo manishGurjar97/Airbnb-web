@@ -1,6 +1,9 @@
+// LISTING CONTROLLER
+
 const listings = require("../models/listing");
 const axios = require("axios");
 
+// Get coordinates from OpenStreetMap
 async function getCoordinates(location) {
   try {
     const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(location)}`;
@@ -20,20 +23,19 @@ async function getCoordinates(location) {
     }
 
   } catch (err) {
-    console.log("🌍 Geocoding Failed:", err);
+    console.log("Geocoding Failed:", err);
   }
 
   return null;
 }
 
-
-// 🏠 Show all listings
+// Show all listings
 module.exports.index = async (req, res) => {
   const listing = await listings.find({});
   res.render("listings/home", { listing });
 };
 
-// ➕ Create new listing
+// Create new listing
 module.exports.newlisting = async (req, res) => {
   try {
     const { title, description, price, location } = req.body;
@@ -41,7 +43,6 @@ module.exports.newlisting = async (req, res) => {
     let url = req.file?.path || "/default.jpg";
     let filename = req.file?.filename || "default.jpg";
 
-    // 🌍 Auto geo + country extract
     const geo = await getCoordinates(location);
 
     const newListing = new listings({
@@ -49,7 +50,7 @@ module.exports.newlisting = async (req, res) => {
       description,
       price,
       location,
-      country: geo.country,  // ⭐ Auto-filled country
+      country: geo.country,
       owner: req.user._id,
       geometry: {
         lat: geo.lat,
@@ -63,29 +64,26 @@ module.exports.newlisting = async (req, res) => {
     res.redirect("/listing");
 
   } catch (err) {
-    console.error("❌ Create Listing Error:", err.message);
-    req.flash("error", "Failed to create listing!");
+    console.error("Create Listing Error:", err.message);
+    req.flash("success", "Failed to create listing!please enter valid city or country ");
     res.redirect("/listing");
   }
 };
 
-
-// ✏ Edit listing page
+// Edit listing page
 module.exports.editListing = async (req, res) => {
   const { id } = req.params;
   const listdata = await listings.findById(id);
   res.render("listings/update", { listdata });
 };
 
-// 🛠 Update listing
+// Update listing
 module.exports.updateListing = async (req, res) => {
   try {
     let { id } = req.params;
     const { title, description, price, location } = req.body;
 
-    // 🌍 Auto geo + auto country extract
     const geo = await getCoordinates(location);
-
     let updatedImage = {};
 
     if (req.body.image) {
@@ -100,18 +98,12 @@ module.exports.updateListing = async (req, res) => {
       description,
       price,
       location,
-
-      // ⭐ Auto country (user se nahi)
       country: geo.country,
-
       owner: req.user._id,
-
-      // ⭐ Auto geometry
       geometry: {
         lat: geo.lat,
         lng: geo.lng
       },
-
       ...(updatedImage.url && { image: updatedImage })
     });
 
@@ -119,77 +111,78 @@ module.exports.updateListing = async (req, res) => {
     res.redirect(`/listing/${id}`);
 
   } catch (err) {
-    console.error("❌ Update Listing Error:", err.message);
+    console.error("Update Listing Error:", err.message);
     req.flash("error", "Failed to update listing");
     res.redirect("/listing");
   }
 };
 
+// Show full listing details
+module.exports.showListing = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-// 👁 Full Detail Page
-module.exports.showListing = async (req, res) => {
-  const { id } = req.params;
-  const listdata = await listings
-    .findById(id)
-    .populate("owner")
-    .populate({
-      path: "reviews",
-      populate: {
-        path: "author"
-      }
-    });
-    let count = listdata.visits += 1;
+    const listdata = await listings
+      .findById(id)
+      .populate("owner")
+      .populate({
+        path: "reviews",
+        populate: { path: "author" }
+      });
+
+    if (!listdata) {
+      req.flash("error", "Listing not found!");
+      return res.redirect("/listing");
+    }
+
+    listdata.visits = (listdata.visits || 0) + 1;
     await listdata.save();
-    console.log(count);
 
-  res.render("listings/showdetails", { listdata });
+    res.render("listings/showdetails", { listdata });
+
+  } catch (err) {
+    next(err);
+  }
 };
 
-// 🗑 Delete listing
+// Delete listing
 module.exports.deleteListing = async (req, res) => {
   await listings.findByIdAndDelete(req.params.id);
   req.flash("success", "Listing deleted successfully!");
   res.redirect("/listing");
 };
 
-// ➕ Add form render
+// Render add listing form
 module.exports.listingAddForm = (req, res) => {
   res.render("listings/add");
 };
 
-module.exports.trending = async (req, res) => {
-
+// Home page with trending sort
+module.exports.index = async (req, res) => {
   let { sort } = req.query;
   let listing;
 
-  // 🔥 Trending Filter (highest visits first)
   if (sort === "trending") {
     listing = await listings.find().sort({ visits: -1 });
-    console.log(listing);
   } else {
-    // Default: all listings without sorting
-    listing = await listings.find();
+    listing = await listings.find({});
   }
 
-  res.render("listings/home", {listing});
-}
+  res.render("listings/home", { listing });
+};
 
-//search form data 
-
+// Search form handler
 module.exports.search = async (req, res) => {
-  let data = req.body.data;
+  let data = req.query.data;
 
-  // If empty input
   if (!data) {
     req.flash("success", "Please enter a location!");
     return res.redirect("/listing");
   }
 
-  // Clean input
   data = data.trim().toLowerCase();
   const regex = new RegExp(data, "i");
 
-  // Search DB (location OR country)
   let listing = await listings.find({
     $or: [
       { location: { $regex: regex } },
@@ -197,16 +190,10 @@ module.exports.search = async (req, res) => {
     ]
   });
 
-  // If no listings found
-  if (listing.length === 0) {
-    req.flash("success", "Sorry! No listings are available at this place.");
+  if (!listing || listing.length === 0) {
+    req.flash("error", "Sorry! No listings are available at this place.");
     return res.render("listings/home", { listing: [] });
   }
 
-  // If matched
   res.render("listings/home", { listing });
 };
-
-  
-  
-
