@@ -85,6 +85,11 @@ main()
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log("Database connection error:", err));
 
+
+app.get("/", (req, res) => {
+  res.redirect("/listing");
+});
+
 // Routes
 app.use("/listing", Listings);
 app.use("/listing/:id/review", Reviews);
