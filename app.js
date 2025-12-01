@@ -75,7 +75,8 @@ app.use((req, res, next) => {
 });
 
 // MongoDB connection
-const port = 8080;
+const port = process.env.PORT || 8080;
+
 
 
 async function main() {
@@ -100,6 +101,7 @@ app.use("/",users);
 //   const { statusCode = 500, message = "Something went wrong" } = err;
 //   res.render("listings/error", { statusCode, message, err });
 // });
+
 app.use((err, req, res, next) => {
 
   if (res.headersSent) {
