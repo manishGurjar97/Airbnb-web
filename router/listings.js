@@ -21,13 +21,14 @@ const listingcontroller = require("../controllers/listings.js");
 // -------------------- ROUTES -------------------- //
 
 // Trending Listings
-router.get("/trending", wrapasync(listingcontroller.trending));
+router.get("/trending", wrapasync(listingcontroller.index));
 
 //  All Listings (Home Page)
 router.get("/", wrapasync(listingcontroller.index));
 
 //  Search Route (POST)
-router.post("/search/location", wrapasync(listingcontroller.search));
+router.get("/search", wrapasync(listingcontroller.search));
+// router.post("/search/location", wrapasync(listingcontroller.search));
 
 
 //  Add Listing Form

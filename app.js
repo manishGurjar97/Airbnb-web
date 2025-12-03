@@ -53,7 +53,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(session(sessionOptions)); // session middleware pehle lagana zaruri hai
+app.use(session(sessionOptions)); 
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,11 +96,7 @@ app.use("/listing", Listings);
 app.use("/listing/:id/review", Reviews);
 app.use("/",users);
 
-// Global error handler
-// app.use((err, req, res, next) => {
-//   const { statusCode = 500, message = "Something went wrong" } = err;
-//   res.render("listings/error", { statusCode, message, err });
-// });
+
 
 app.use((err, req, res, next) => {
 
