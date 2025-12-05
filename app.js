@@ -90,6 +90,10 @@ main()
 app.get("/", (req, res) => {
   res.redirect("/listing");
 });
+app.get("/health", (req, res) => {
+  res.send("server active");
+});
+
 
 // Routes
 app.use("/listing", Listings);
