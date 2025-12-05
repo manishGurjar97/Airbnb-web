@@ -44,6 +44,10 @@ router.post(
   validateScema,
   wrapasync(listingcontroller.newlisting)
 );
+//only for server walkup''
+app.get("/health", (req, res) => {
+  res.send("server active");
+});
 
 // Edit Listing Form
 router.get(
