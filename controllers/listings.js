@@ -157,19 +157,7 @@ module.exports.listingAddForm = (req, res) => {
   res.render("listings/add");
 };
 
-// Home page with trending sort
-// module.exports.index = async (req, res) => {
-//   let { sort } = req.query;
-//   let listing;
 
-//   if (sort === "trending") {
-//     listing = await listings.find().sort({ visits: -1 });
-//   } else {
-//     listing = await listings.find({});
-//   }
-
-//   res.render("listings/home", { listing });
-// };
 module.exports.index = async (req, res) => {
   const listing = await listings.find().sort({ visits: -1 });
   res.render("listings/home", { listing });

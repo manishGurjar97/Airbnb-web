@@ -105,7 +105,7 @@ app.use("/",users);
 app.use((err, req, res, next) => {
 
   if (res.headersSent) {
-      return next(err);  // IMPORTANT FIX
+      return next(err);  
   }
 
   const statusCode = err.statusCode || 500;
